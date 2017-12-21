@@ -61,6 +61,8 @@ public class Bartok : MonoBehaviour
 
 	public TurnPhase phase = TurnPhase.idle;
 	public GameObject turnLight;
+
+	public bool Interupt = false;
 	#endregion
 
 	#region Private
@@ -207,10 +209,14 @@ public class Bartok : MonoBehaviour
 
 	public void StartGame()
 	{
-		PassTurn(1);
+		StartCoroutine(PassTurn(-1));
 	}
 
-	public void PassTurn(int num = -1)
+	public void ContinueGame(){
+		StartCoroutine (PassTurn ());
+	}
+
+	public IEnumerator PassTurn(int num = -1)
 	{
 		if(num == -1)
 		{
@@ -221,17 +227,35 @@ public class Bartok : MonoBehaviour
 		if (CURRENT_PLAYER != null)
 		{
 			lastPlayerNum = CURRENT_PLAYER.playerNum;
-			if (CheckGameOver()) return;
+			if (CheckGameOver()) yield break;
 		}
 		CURRENT_PLAYER = players[num];
 		phase = TurnPhase.pre;
 
-		CURRENT_PLAYER.TakeTurn();
+		int waitCount = 0;
+		while ( !Interupt && waitCount < 20){
+			yield return new WaitForSeconds(.25f);
+			Debug.Log ("Current Time: " + Time.time);
+			if (!Interupt){
+				waitCount++;
+			}
+		}
 
-		Vector3 lPos = CURRENT_PLAYER.handSLotDef.pos + Vector3.back * 5;
-		turnLight.transform.position = lPos;
+		if (!Interupt){
+			CURRENT_PLAYER.TakeTurn();
+			Vector3 lPos = CURRENT_PLAYER.handSLotDef.pos + Vector3.back * 5;
+			turnLight.transform.position = lPos;
+		}
+
 
 		Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.PassTurn()", "Old: " + lastPlayerNum, "New: " + CURRENT_PLAYER.playerNum);
+
+		//while(CURRENT_PLAYER.playerNum > 1){
+		//	if(){
+		//	}
+		//}
+
+		//StartGame ();
 	}
 
 

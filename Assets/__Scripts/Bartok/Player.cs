@@ -144,7 +144,7 @@ public class Player
     public void CBCallback2(CardBartok tCB)
     {
         Utils.tr(Utils.RoundToPlaces(Time.time), "Player.CBCallback()", tCB.name, "Player " + playerNum);
-        Bartok.S.PassTurn();
+        Bartok.S.ContinueGame();
     }
     #endregion
 
